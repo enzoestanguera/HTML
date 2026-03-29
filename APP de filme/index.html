@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO básico -->
+    <meta name="description" content="Aplicativo de busca de filmes usando API OMDb">
+    
+    <title>Busca de Filmes 🎬</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Fonte -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+</head>
+
+<body>
+
+    <main class="container">
+        
+        <!-- Título -->
+        <header class="header">
+            <h1>🎬 Movie Search</h1>
+            <p>Encontre informações completas sobre qualquer filme</p>
+        </header>
+
+        <!-- Busca -->
+        <section class="search-container">
+            <input 
+                type="text" 
+                id="movie-name" 
+                placeholder="Digite o nome do filme..."
+                autocomplete="off"
+            >
+
+            <button id="search-btn">
+                🔍 Buscar
+            </button>
+        </section>
+
+        <!-- Resultado -->
+        <section id="result" class="result">
+            <h3 class="msg">Pesquise por um filme 👆</h3>
+        </section>
+
+    </main>
+
+    <!-- Scripts -->
+    <script src="key.js"></script>
+    <script src="index.js"></script>
+
+</body>
+</html>

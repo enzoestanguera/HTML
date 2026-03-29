@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* RESET */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* VARIÁVEIS (padrão profissional) */
+:root{
+    --bg-dark: #1c1917;
+    --primary: #ff2223;
+    --primary-light: #ff4d4f;
+    --text: #ffffff;
+    --text-soft: rgba(255,255,255,0.6);
+    --glass: rgba(255,255,255,0.06);
+    --border: rgba(255,255,255,0.12);
+}
+
+/* BODY */
+body{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-family: 'Inter', sans-serif;
+    color: var(--text);
+
+    background: radial-gradient(circle at top, #2a2623, var(--bg-dark) 60%),
+                linear-gradient(135deg, var(--bg-dark), var(--primary));
+}
+
+/* CONTAINER */
+.container{
+    width: 90%;
+    max-width: 420px;
+    padding: 2.2em 1.8em;
+
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+
+    border-radius: 16px;
+    border: 1px solid var(--border);
+
+    box-shadow: 
+        0 10px 30px rgba(0,0,0,0.5),
+        inset 0 0 20px rgba(255,255,255,0.03);
+
+    animation: fadeIn 0.5s ease;
+}
+
+/* HEADER (se usar o HTML que te mandei) */
+.header{
+    text-align: center;
+    margin-bottom: 1.5em;
+}
+
+.header h1{
+    font-size: 1.6em;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.header p{
+    font-size: 0.9em;
+    color: var(--text-soft);
+}
+
+/* SEARCH */
+.search-container{
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 0.8em;
+}
+
+/* INPUT + BUTTON BASE */
+.search-container input,
+.search-container button{
+    font-size: 0.95em;
+    border-radius: 10px;
+    transition: all 0.25s ease;
+}
+
+/* INPUT */
+.search-container input{
+    background: rgba(255,255,255,0.07);
+    border: 1px solid var(--border);
+
+    color: var(--text);
+    padding: 0.75em 1em;
+}
+
+.search-container input::placeholder{
+    color: var(--text-soft);
+}
+
+.search-container input:focus{
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(255,34,35,0.2);
+    outline: none;
+}
+
+/* BUTTON */
+.search-container button{
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    border: none;
+    font-weight: 600;
+    color: white;
+
+    cursor: pointer;
+}
+
+/* MICROINTERAÇÕES (nível premium) */
+.search-container button:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255,34,35,0.4);
+}
+
+.search-container button:active{
+    transform: scale(0.96);
+}
+
+.search-container button:focus{
+    outline: 2px solid rgba(255,255,255,0.2);
+}
+
+/* RESULT */
+.result{
+    margin-top: 1.5em;
+    font-size: 0.95em;
+}
+
+.msg{
+    text-align: center;
+    color: var(--text-soft);
+}
+
+/* SCROLL BONITO */
+.result::-webkit-scrollbar{
+    width: 6px;
+}
+
+.result::-webkit-scrollbar-thumb{
+    background: var(--primary);
+    border-radius: 10px;
+}
+
+/* ANIMAÇÃO */
+@keyframes fadeIn{
+    from{
+        opacity: 0;
+        transform: translateY(15px) scale(0.98);
+    }
+    to{
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
