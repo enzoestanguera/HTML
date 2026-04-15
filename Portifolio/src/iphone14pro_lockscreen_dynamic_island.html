@@ -1,0 +1,417 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500&display=swap');
+
+.scene{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:660px;padding:2rem 1rem;perspective:1400px;
+}
+
+.phone-3d{
+  opacity:0;
+  transform:rotateY(28deg) rotateX(8deg) scale(0.75) translateY(50px);
+  transition:transform 1.2s cubic-bezier(.22,1,.36,1),opacity 1s ease;
+  transform-style:preserve-3d;
+}
+.phone-3d.in{opacity:1;transform:rotateY(-5deg) rotateX(3deg) scale(1) translateY(0)}
+
+.shell{
+  position:relative;width:268px;height:545px;border-radius:47px;
+  background:linear-gradient(145deg,#1a1a1c 0%,#111 35%,#1f1f22 70%,#0a0a0c 100%);
+  box-shadow:
+    0 0 0 1.5px #222,
+    0 0 0 3.5px #c0c0c8,
+    0 0 0 5px #888,
+    18px 36px 90px rgba(0,0,0,0.9),
+    -4px -4px 20px rgba(255,255,255,0.03),
+    inset 0 2px 8px rgba(255,255,255,0.06),
+    inset 0 -14px 28px rgba(0,0,0,0.95);
+}
+.shell::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:4px;
+  background:linear-gradient(118deg,rgba(255,255,255,0.85),rgba(160,160,180,0.4),rgba(50,50,60,0.7),rgba(200,200,220,0.6));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;
+}
+.shell::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;
+  background:linear-gradient(112deg,transparent 18%,rgba(100,120,255,0.12) 28%,rgba(80,100,255,0.06) 38%,transparent 55%);
+  pointer-events:none;
+}
+
+.btn{position:absolute;}
+.bl1{left:-5px;top:106px;width:5px;height:26px;border-radius:2px 0 0 2px;background:linear-gradient(to right,#2a2a2c,#aaa,#666)}
+.bl2{left:-5px;top:144px;width:5px;height:50px;border-radius:2px 0 0 2px;background:linear-gradient(to right,#2a2a2c,#aaa,#666)}
+.bl3{left:-5px;top:202px;width:5px;height:50px;border-radius:2px 0 0 2px;background:linear-gradient(to right,#2a2a2c,#aaa,#666)}
+.br{right:-5px;top:136px;width:5px;height:76px;border-radius:0 2px 2px 0;background:linear-gradient(to left,#2a2a2c,#aaa,#666)}
+
+.screen{
+  position:absolute;inset:9px;border-radius:38px;overflow:hidden;
+  background:#000;isolation:isolate;
+}
+
+/* ===== WALLPAPER SVG ===== */
+.wallpaper{position:absolute;inset:0;z-index:0}
+.wallpaper svg{width:100%;height:100%}
+
+/* ===== OVERLAY escuro no centro ===== */
+.screen-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:radial-gradient(ellipse at 50% 55%,rgba(0,0,0,0.35) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* ===== STATUS BAR ===== */
+.status-bar{
+  position:absolute;z-index:10;top:18px;left:22px;right:22px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.status-icons{display:flex;align-items:center;gap:4px}
+.sig-bar{display:flex;align-items:flex-end;gap:1px}
+.sig-bar span{background:rgba(255,255,255,0.9);border-radius:0.5px;width:3px}
+.wifi-ic{width:14px;height:11px;position:relative;display:flex;align-items:flex-end;justify-content:center}
+.batt{width:22px;height:11px;border:1.5px solid rgba(255,255,255,0.8);border-radius:2.5px;position:relative;display:flex;align-items:center;padding:1.5px}
+.batt::after{content:"";position:absolute;right:-4px;top:50%;transform:translateY(-50%);width:2.5px;height:5px;background:rgba(255,255,255,0.6);border-radius:0 1px 1px 0}
+.batt-fill{flex:1;height:100%;background:rgba(255,255,255,0.9);border-radius:1px;width:75%}
+
+/* ===== DYNAMIC ISLAND ===== */
+.island{
+  position:absolute;z-index:12;top:14px;left:50%;transform:translateX(-50%);
+  width:116px;height:34px;
+  background:#000;border-radius:100px;
+  border:1px solid rgba(255,255,255,0.06);
+  box-shadow:0 0 0 1px rgba(0,0,0,0.8);
+  cursor:pointer;overflow:hidden;
+  transition:all 0.45s cubic-bezier(.34,1.56,.64,1);
+}
+.island.expanded{
+  width:240px;height:92px;top:10px;
+  box-shadow:0 16px 48px rgba(0,0,0,0.95);
+}
+.island-idle{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:space-between;padding:0 10px;
+  transition:opacity 0.2s;
+}
+.island-idle.hide{opacity:0;pointer-events:none}
+.i-camera{width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#1a3a2a,#000);border:1px solid rgba(255,255,255,0.05)}
+.i-cam-lens{position:absolute;inset:2.5px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#1e5c3a,#0a1a10)}
+.i-right{display:flex;align-items:center;gap:3px}
+.i-pill{height:8px;border-radius:4px;background:rgba(255,255,255,0.12)}
+
+.island-exp{
+  position:absolute;inset:0;padding:12px 14px 10px;
+  display:flex;flex-direction:column;gap:8px;
+  opacity:0;transition:opacity 0.25s ease 0.1s;pointer-events:none;
+}
+.island-exp.show{opacity:1;pointer-events:all}
+.iex-row{display:flex;align-items:center;gap:10px}
+.iex-art{
+  width:40px;height:40px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,#1a1ab3,#cd1385);
+  position:relative;overflow:hidden;
+  box-shadow:0 4px 14px rgba(0,0,0,0.7);
+}
+.iex-art::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 38% 28%,rgba(255,255,255,0.28),transparent 55%)}
+.iex-info{flex:1}
+.iex-artist{font-family:'Inter',sans-serif;font-size:10px;font-weight:500;color:#fff;letter-spacing:0.2px}
+.iex-track{font-family:'Inter',sans-serif;font-size:9px;color:rgba(255,255,255,0.5);margin-top:1px}
+.iex-btns{display:flex;gap:10px;align-items:center}
+.ix-btn{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.1);border:none;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.15s}
+.ix-btn:hover{background:rgba(255,255,255,0.22)}
+.ix-play{width:28px;height:28px;background:rgba(255,255,255,0.9);color:#000;font-size:11px}
+.ix-play:hover{background:#fff}
+.iex-prog{height:3px;background:rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;cursor:pointer}
+.iex-prog-fill{height:100%;background:#fff;width:0%;border-radius:2px;animation:proggo 222s linear infinite}
+@keyframes proggo{from{width:0%}to{width:100%}}
+.iex-times{display:flex;justify-content:space-between;font-family:'Inter',sans-serif;font-size:8px;color:rgba(255,255,255,0.35)}
+
+/* ===== LOCK SCREEN CONTENT ===== */
+.lock-date{
+  position:absolute;z-index:5;top:68px;left:0;right:0;text-align:center;
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:300;
+  color:rgba(255,255,255,0.85);letter-spacing:0.3px;
+  text-shadow:0 1px 8px rgba(0,0,0,0.6);
+}
+.lock-time{
+  position:absolute;z-index:5;top:86px;left:0;right:0;text-align:center;
+  font-family:'Inter',sans-serif;font-size:72px;font-weight:200;
+  color:#fff;letter-spacing:-4px;line-height:1;
+  text-shadow:0 2px 20px rgba(0,0,0,0.5),0 0 60px rgba(255,255,255,0.08);
+}
+
+/* ===== BOTTOM CONTROLS ===== */
+.lock-bottom{
+  position:absolute;z-index:5;bottom:28px;left:24px;right:24px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.lock-btn{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,0.15);
+  backdrop-filter:blur(12px);
+  border:0.5px solid rgba(255,255,255,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;cursor:pointer;
+  box-shadow:0 4px 16px rgba(0,0,0,0.4);
+  transition:background 0.2s,transform 0.15s;
+}
+.lock-btn:hover{background:rgba(255,255,255,0.25);transform:scale(1.05)}
+.lock-btn:active{transform:scale(0.95)}
+
+.home-bar{
+  position:absolute;z-index:10;bottom:8px;left:50%;transform:translateX(-50%);
+  width:88px;height:4px;border-radius:2px;background:rgba(255,255,255,0.45);
+}
+
+/* notif pill */
+.notif{
+  position:absolute;z-index:5;top:200px;left:50%;transform:translateX(-50%);
+  background:rgba(255,255,255,0.1);backdrop-filter:blur(16px);
+  border:0.5px solid rgba(255,255,255,0.15);border-radius:16px;
+  padding:10px 14px;display:flex;align-items:center;gap:10px;
+  width:220px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.5);
+}
+.notif-app{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#007aff,#0a84ff);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.notif-text{display:flex;flex-direction:column;gap:2px}
+.notif-title{font-family:'Inter',sans-serif;font-size:11px;font-weight:500;color:#fff}
+.notif-body{font-family:'Inter',sans-serif;font-size:10px;color:rgba(255,255,255,0.6)}
+.notif-time{font-family:'Inter',sans-serif;font-size:9px;color:rgba(255,255,255,0.35);margin-left:auto;align-self:flex-start}
+</style>
+
+<h2 class="sr-only">Recriação fiel da lock screen do iPhone 14 Pro com Dynamic Island e wallpaper de esferas em bronze</h2>
+
+<div class="scene" id="scene">
+  <div class="phone-3d" id="phone3d">
+    <div class="shell">
+      <div class="bl1 btn"></div><div class="bl2 btn"></div><div class="bl3 btn"></div><div class="br btn"></div>
+
+      <div class="screen">
+
+        <!-- WALLPAPER — esferas bronze/laranja igual ao iPhone 14 Pro -->
+        <div class="wallpaper">
+          <svg viewBox="0 0 250 530" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="bg" cx="50%" cy="40%" r="80%">
+                <stop offset="0%" stop-color="#1a1208"/>
+                <stop offset="50%" stop-color="#0d0b07"/>
+                <stop offset="100%" stop-color="#050400"/>
+              </radialGradient>
+              <radialGradient id="sphere1" cx="38%" cy="28%" r="60%">
+                <stop offset="0%" stop-color="#c8844a"/>
+                <stop offset="30%" stop-color="#9a5c28"/>
+                <stop offset="70%" stop-color="#5a3010"/>
+                <stop offset="100%" stop-color="#1a0e04"/>
+              </radialGradient>
+              <radialGradient id="sphere2" cx="35%" cy="25%" r="65%">
+                <stop offset="0%" stop-color="#d4956a"/>
+                <stop offset="25%" stop-color="#b0622a"/>
+                <stop offset="65%" stop-color="#6b3a12"/>
+                <stop offset="100%" stop-color="#200e04"/>
+              </radialGradient>
+              <radialGradient id="sphere3" cx="40%" cy="30%" r="55%">
+                <stop offset="0%" stop-color="#e8a870"/>
+                <stop offset="35%" stop-color="#c07838"/>
+                <stop offset="75%" stop-color="#7a4818"/>
+                <stop offset="100%" stop-color="#250f04"/>
+              </radialGradient>
+              <radialGradient id="sphere4" cx="32%" cy="22%" r="60%">
+                <stop offset="0%" stop-color="#d4855a"/>
+                <stop offset="28%" stop-color="#aa5a25"/>
+                <stop offset="68%" stop-color="#663210"/>
+                <stop offset="100%" stop-color="#1e0a03"/>
+              </radialGradient>
+              <radialGradient id="glowR" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#e07840" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="#e07840" stop-opacity="0"/>
+              </radialGradient>
+              <filter id="soft"><feGaussianBlur stdDeviation="6"/></filter>
+              <filter id="softer"><feGaussianBlur stdDeviation="14"/></filter>
+              <filter id="sharpglow"><feGaussianBlur stdDeviation="2"/></filter>
+              <clipPath id="screenClip"><rect width="250" height="530" rx="29"/></clipPath>
+            </defs>
+
+            <g clip-path="url(#screenClip)">
+              <rect width="250" height="530" fill="url(#bg)"/>
+
+              <!-- warm ambient glow top -->
+              <ellipse cx="160" cy="80" rx="140" ry="120" fill="#8b4a18" opacity="0.18" filter="url(#softer)"/>
+
+              <!-- BIG sphere top right — the large bronze planet -->
+              <circle cx="198" cy="85" r="145" fill="url(#sphere1)" opacity="0.95"/>
+              <circle cx="198" cy="85" r="145" fill="none" stroke="#e8a060" stroke-width="0.5" opacity="0.15"/>
+              <!-- highlight -->
+              <ellipse cx="152" cy="30" rx="55" ry="40" fill="#f0c090" opacity="0.08" filter="url(#soft)"/>
+
+              <!-- second sphere — partial left -->
+              <circle cx="-20" cy="220" r="130" fill="url(#sphere2)" opacity="0.85"/>
+              <ellipse cx="-55" cy="170" rx="50" ry="36" fill="#f4c898" opacity="0.06" filter="url(#soft)"/>
+
+              <!-- center-right smaller sphere -->
+              <circle cx="230" cy="310" r="100" fill="url(#sphere3)" opacity="0.75"/>
+              <ellipse cx="200" cy="272" rx="38" ry="28" fill="#fad4a0" opacity="0.07" filter="url(#soft)"/>
+
+              <!-- OVAL ring — iconic element -->
+              <g transform="translate(110,390) rotate(-25)">
+                <ellipse cx="0" cy="0" rx="70" ry="38" fill="none" stroke="#e07030" stroke-width="3" opacity="0.9"/>
+                <ellipse cx="0" cy="0" rx="70" ry="38" fill="none" stroke="#f09050" stroke-width="1" opacity="0.4" filter="url(#sharpglow)"/>
+                <ellipse cx="0" cy="0" rx="72" ry="40" fill="none" stroke="#c05020" stroke-width="0.5" opacity="0.3"/>
+                <!-- inner glow -->
+                <ellipse cx="0" cy="0" rx="64" ry="33" fill="none" stroke="#ff9040" stroke-width="5" opacity="0.12" filter="url(#soft)"/>
+              </g>
+
+              <!-- bottom sphere partial -->
+              <circle cx="60" cy="510" r="110" fill="url(#sphere4)" opacity="0.7"/>
+
+              <!-- extra ambient bronze -->
+              <ellipse cx="125" cy="420" rx="100" ry="80" fill="#8b4010" opacity="0.12" filter="url(#softer)"/>
+
+              <!-- subtle vignette -->
+              <radialGradient id="vig" cx="50%" cy="50%" r="75%">
+                <stop offset="50%" stop-color="transparent"/>
+                <stop offset="100%" stop-color="#000" stop-opacity="0.65"/>
+              </radialGradient>
+              <rect width="250" height="530" fill="url(#vig)"/>
+
+              <!-- subtle blue rim glow (match photo) -->
+              <rect x="0" y="0" width="250" height="530" rx="29" fill="none" stroke="#4466ff" stroke-width="3" opacity="0.25"/>
+            </g>
+          </svg>
+        </div>
+
+        <div class="screen-overlay"></div>
+
+        <!-- STATUS BAR -->
+        <div class="status-bar">
+          <div class="sig-bar">
+            <span style="height:4px"></span>
+            <span style="height:6px"></span>
+            <span style="height:8px"></span>
+            <span style="height:10px"></span>
+          </div>
+          <div class="status-icons">
+            <svg width="15" height="11" viewBox="0 0 15 11" fill="none">
+              <path d="M7.5 2.5C9.5 2.5 11.3 3.3 12.6 4.6L14 3.2C12.3 1.5 10 0.5 7.5 0.5C5 0.5 2.7 1.5 1 3.2L2.4 4.6C3.7 3.3 5.5 2.5 7.5 2.5Z" fill="rgba(255,255,255,0.9)"/>
+              <path d="M7.5 5.5C8.8 5.5 10 6 10.9 6.9L12.3 5.5C11 4.2 9.3 3.5 7.5 3.5C5.7 3.5 4 4.2 2.7 5.5L4.1 6.9C5 6 6.2 5.5 7.5 5.5Z" fill="rgba(255,255,255,0.9)"/>
+              <circle cx="7.5" cy="10" r="1.5" fill="rgba(255,255,255,0.9)"/>
+            </svg>
+            <div class="batt"><div class="batt-fill"></div></div>
+          </div>
+        </div>
+
+        <!-- DYNAMIC ISLAND -->
+        <div class="island" id="island">
+          <div class="island-idle" id="idleC">
+            <div class="i-camera" style="position:relative"><div class="i-cam-lens"></div></div>
+            <div class="i-right">
+              <div class="i-pill" style="width:24px"></div>
+              <div class="i-pill" style="width:16px"></div>
+            </div>
+          </div>
+          <div class="island-exp" id="expC">
+            <div class="iex-row">
+              <div class="iex-art"></div>
+              <div class="iex-info">
+                <div class="iex-artist">Neon Dusk</div>
+                <div class="iex-track">Midnight Bloom</div>
+              </div>
+              <div class="iex-btns">
+                <button class="ix-btn">⏮</button>
+                <button class="ix-btn ix-play" id="playBtn">▶</button>
+                <button class="ix-btn">⏭</button>
+              </div>
+            </div>
+            <div class="iex-prog"><div class="iex-prog-fill" id="progFill"></div></div>
+            <div class="iex-times"><span id="tCur">0:00</span><span>3:42</span></div>
+          </div>
+        </div>
+
+        <!-- DATE + TIME -->
+        <div class="lock-date" id="lockDate">Monday, September 9</div>
+        <div class="lock-time" id="lockTime">9:41</div>
+
+        <!-- NOTIFICAÇÃO -->
+        <div class="notif">
+          <div class="notif-app">💬</div>
+          <div class="notif-text">
+            <div class="notif-title">Mensagens</div>
+            <div class="notif-body">Projeto incrível! Quando termina?</div>
+          </div>
+          <div class="notif-time">agora</div>
+        </div>
+
+        <!-- BOTTOM -->
+        <div class="lock-bottom">
+          <div class="lock-btn">🔦</div>
+          <div class="lock-btn">📷</div>
+        </div>
+
+        <div class="home-bar"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const phone3d = document.getElementById('phone3d');
+const scene = document.getElementById('scene');
+const island = document.getElementById('island');
+const idleC = document.getElementById('idleC');
+const expC = document.getElementById('expC');
+const playBtn = document.getElementById('playBtn');
+const progFill = document.getElementById('progFill');
+const tCur = document.getElementById('tCur');
+
+const obs = new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting){phone3d.classList.add('in');obs.disconnect()}});
+},{threshold:0.2});
+obs.observe(scene);
+
+function updateClock(){
+  const n=new Date();
+  const h=n.getHours(),m=String(n.getMinutes()).padStart(2,'0');
+  document.getElementById('lockTime').textContent=h+':'+m;
+  const ds=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const ms=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('lockDate').textContent=ds[n.getDay()]+', '+ms[n.getMonth()]+' '+n.getDate();
+}
+updateClock();setInterval(updateClock,10000);
+
+let expanded=false,playing=false,sec=0,timer=null;
+const total=222;
+
+island.addEventListener('mouseenter',()=>{if(!expanded)island.style.boxShadow='0 8px 32px rgba(0,0,0,0.9)'});
+island.addEventListener('mouseleave',()=>{if(!expanded)island.style.boxShadow=''});
+island.addEventListener('click',()=>{
+  expanded=!expanded;
+  island.classList.toggle('expanded',expanded);
+  idleC.classList.toggle('hide',expanded);
+  expC.classList.toggle('show',expanded);
+  if(!expanded&&playing){stopPlay()}
+});
+
+playBtn.addEventListener('click',e=>{
+  e.stopPropagation();
+  playing=!playing;
+  playBtn.textContent=playing?'⏸':'▶';
+  if(playing){
+    timer=setInterval(()=>{
+      sec=Math.min(sec+1,total);
+      progFill.style.animation='none';
+      progFill.style.width=Math.round(sec/total*100)+'%';
+      const cm=Math.floor(sec/60),cs=sec%60;
+      tCur.textContent=cm+':'+(cs<10?'0':'')+cs;
+      if(sec>=total)stopPlay();
+    },1000);
+  }else clearInterval(timer);
+});
+function stopPlay(){playing=false;playBtn.textContent='▶';clearInterval(timer)}
+
+document.addEventListener('mousemove',e=>{
+  if(!phone3d.classList.contains('in'))return;
+  const r=scene.getBoundingClientRect();
+  const cx=r.left+r.width/2,cy=r.top+r.height/2;
+  const dx=(e.clientX-cx)/700,dy=(e.clientY-cy)/700;
+  phone3d.style.transform=`rotateY(${-5+dx*14}deg) rotateX(${3-dy*10}deg) scale(1) translateY(0)`;
+});
+</script>

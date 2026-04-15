@@ -354,3 +354,18 @@ document.head.appendChild(style);
   }
 
 })();
+
+// Garante que o iframe carregue corretamente
+const iphoneFrame = document.querySelector('.iphone-frame');
+
+if (iphoneFrame) {
+    iphoneFrame.onload = function() {
+        console.log("Projeto iPhone 14 Pro carregado com sucesso.");
+    };
+}
+
+// Opcional: Impedir que o clique no card dispare outras funções 
+// se o usuário estiver interagindo com o iPhone
+document.querySelector('.iphone-container').addEventListener('click', (e) => {
+    e.stopPropagation(); // Isso faz com que o clique fique "preso" dentro do iPhone
+});
